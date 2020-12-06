@@ -107,21 +107,22 @@
         </div>
 
         <?php if (empty($user_time)) : ?>
-            <div class="row">
-                <div class="col m6">
-                    <a href="<?= base_url("absen-now") ?>">
-                        <div class="card hoverable">
-                            <div class="card-content blue lighten-1 white-text flow-text">
-                                <b style="font-size: 20px;"><i class="material-icons right">assignment_turned_in</i> Absen Masuk Sekarang</b>
+            <?php if ($nos > $time_work) : ?>
+                <div class="row">
+                    <div class="col m6">
+                        <a href="#popup-warning" class="modal-trigger">
+                            <div class="card hoverable">
+                                <div class="card-content blue lighten-1 white-text flow-text">
+                                    <b style="font-size: 20px;"><i class="material-icons right">assignment_turned_in</i> Absen Masuk Sekarang</b>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
-            <?php elseif ($user_time["work_at"] == null || $user_time["home_at"] != null) : ?>
-                <?php if ($now->diff($time_work)->i > 0) : ?>
+                        </a>
+                    </div>
+
+                <?php else : ?>
                     <div class="row">
                         <div class="col m6">
-                            <a href="#popup-warning" class="modal-trigger">
+                            <a href="<?= base_url("absen-now") ?>">
                                 <div class="card hoverable">
                                     <div class="card-content blue lighten-1 white-text flow-text">
                                         <b style="font-size: 20px;"><i class="material-icons right">assignment_turned_in</i> Absen Masuk Sekarang</b>
@@ -129,11 +130,12 @@
                                 </div>
                             </a>
                         </div>
-
-                    <?php else : ?>
+                    <?php endif; ?>
+                <?php elseif ($user_time["work_at"] == null || $user_time["home_at"] != null) : ?>
+                    <?php if ($now > $time_work) : ?>
                         <div class="row">
                             <div class="col m6">
-                                <a href="<?= base_url("absen-now") ?>">
+                                <a href="#popup-warning" class="modal-trigger">
                                     <div class="card hoverable">
                                         <div class="card-content blue lighten-1 white-text flow-text">
                                             <b style="font-size: 20px;"><i class="material-icons right">assignment_turned_in</i> Absen Masuk Sekarang</b>
@@ -142,65 +144,78 @@
                                 </a>
                             </div>
 
-                        <?php endif; ?>
-                        <!-- Card divider -->
-                    <?php elseif ($user_time["work_at"] != null && $user_time["home_at"] == null) : ?>
-                        <div class="col m6">
-                            <a href="<?= base_url("home-now") ?>">
-                                <div class="card hoverable">
-                                    <div class="card-content grey darken-1 white-text flow-text">
-                                        <b style="font-size: 20px;"><i class="material-icons right">person_remove</i> Absen Pulang</b>
-                                    </div>
+                        <?php else : ?>
+                            <div class="row">
+                                <div class="col m6">
+                                    <a href="<?= base_url("absen-now") ?>">
+                                        <div class="card hoverable">
+                                            <div class="card-content blue lighten-1 white-text flow-text">
+                                                <b style="font-size: 20px;"><i class="material-icons right">assignment_turned_in</i> Absen Masuk Sekarang</b>
+                                            </div>
+                                        </div>
+                                    </a>
                                 </div>
-                            </a>
-                        </div>
-                        </div>
-                    <?php endif; ?>
-                    <?php if ($user["admin"] == 1) : ?>
-                        <div class="row">
+
+                            <?php endif; ?>
+                            <!-- Card divider -->
+                        <?php elseif ($user_time["work_at"] != null && $user_time["home_at"] == null) : ?>
                             <div class="col m6">
-                                <a href="<?= base_url("setting-time"); ?>">
+                                <a href="<?= base_url("home-now") ?>">
                                     <div class="card hoverable">
-                                        <div class="card-content pink darken-1 white-text">
-                                            <b style="font-size: 20px;"><i class="material-icons right">alarm_add</i>Tentukan Waktu Masuk</b>
+                                        <div class="card-content grey darken-1 white-text flow-text">
+                                            <b style="font-size: 20px;"><i class="material-icons right">person_remove</i> Absen Pulang</b>
                                         </div>
                                     </div>
                                 </a>
                             </div>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if ($user["admin"] == 1) : ?>
+                            <div class="row">
+                                <div class="col m6">
+                                    <a href="<?= base_url("setting-time"); ?>">
+                                        <div class="card hoverable">
+                                            <div class="card-content pink darken-1 white-text">
+                                                <b style="font-size: 20px;"><i class="material-icons right">alarm_add</i>Tentukan Waktu Masuk</b>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                         </div>
-                    <?php endif; ?>
                     </div>
-            </div>
-            <!-- TODO POP UP MODAL -->
-            <div class="modal" id="popup-warning">
-                <div class="modal-content red darken-4 white-text flow-text">
-                    <h4 class="center-align"><b>Warning!!!</b></h4>
-                    <p>Anda sudah telat <b><?= $now->diff($time_work)->h; ?> jam <?= $now->diff($time_work)->i; ?> menit yang lalu</b></p>
-                    <p>Berikan kami alasan kenapa anda telat?</p>
-                    <form method="POST" action="<?= base_url("absen-now") ?>">
-                        <div class="input-field">
-                            <label for="excuse">Alasan</label>
-                            <textarea name="excuse" id="excuse" style="padding: 1rem 1rem;" class="materialize-textarea white-text" cols="30" rows="10"></textarea>
+                    <!-- TODO POP UP MODAL -->
+                    <div class="modal" id="popup-warning">
+                        <div class="modal-content red darken-4 white-text flow-text">
+                            <h4 class="center-align"><b>Warning!!!</b></h4>
+                            <p>Anda sudah telat <b><?= $now->diff($time_work)->h; ?> jam <?= $now->diff($time_work)->i; ?> menit yang lalu</b></p>
+                            <p>Berikan kami alasan kenapa anda telat?</p>
+                            <form method="POST" action="<?= base_url("absen-now") ?>">
+                                <div class="input-field">
+                                    <label for="excuse">Alasan</label>
+                                    <textarea name="excuse" id="excuse" style="padding: 1rem 1rem;" class="materialize-textarea white-text" cols="30" rows="10"></textarea>
+                                </div>
                         </div>
-                </div>
-                <div class="modal-footer red darken-4">
-                    <button type="submit" class=" waves-effect btn green darken-3">Absen Now!</button>
-                    <a href="#" class="modal-close waves-effect btn grey darken-4">I don't want it!</a>
-                </div>
-                </form>
-            </div>
+                        <div class="modal-footer red darken-4">
+                            <button type="submit" class=" waves-effect btn green darken-3">Absen Now!</button>
+                            <a href="#" class="modal-close waves-effect btn grey darken-4">I don't want it!</a>
+                        </div>
+                        </form>
+                    </div>
 
-            <script>
-                const notification = document.querySelector(".notificiation");
+                    <script>
+                        const notification = document.querySelector(".notificiation");
 
-                notification.addEventListener("click", e => {
-                    e.stopPropagation()
-                    e.preventDefault()
+                        notification.addEventListener("click", e => {
+                            e.stopPropagation()
+                            e.preventDefault()
 
-                    notification.classList.add("hide");
-                })
+                            notification.classList.add("hide");
+                        })
 
-                function removeThis(element) {
-                    element.classList.add("hide");
-                }
-            </script>
+                        function removeThis(element) {
+                            element.classList.add("hide");
+                        }
+                    </script>

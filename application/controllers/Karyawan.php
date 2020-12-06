@@ -354,6 +354,7 @@ class Karyawan extends CI_Controller
                     $data["is_late"] = 1;
                     if ($this->db->insert("kehadiran", $data)) {
                         $data = [
+                            "nama" => $this->user["nama"],
                             "username" => $this->user["username"],
                             "come_at" => $formatted_now,
                             "excuse" => $excuse
