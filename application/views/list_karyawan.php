@@ -45,11 +45,11 @@
                     <td><?= $user["total_terlambat"] == null ? 0 : $user["total_terlambat"]; ?></td>
                     <td><?= $user["total_tidakmasuk"] == null ? 0 : $user["total_tidakmasuk"]; ?></td>
                     <td><?= $createad_at; ?></td>
-                    <?php if ($user["is_online"] == 1) : ?>
+                    <!-- <?php if ($user["is_online"] == 1) : ?>
                         <td><i class="material-icons left green-text lighten-2 tiny">fiber_manual_record</i>Online</td>
                     <?php else : ?>
                         <td><i class="material-icons left grey-text lighten-2 tiny">fiber_manual_record</i>Offline</td>
-                    <?php endif; ?>
+                    <?php endif; ?> -->
                 </tr>
             <?php endforeach; ?>
         </tbody>
