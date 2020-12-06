@@ -24,6 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 $config['base_url'] = 'http://localhost/Employees-Automatic-Absent';
+// $config['base_url'] = 'https://dysentry30.github.io/Employees-Automatic-Absent/';
 
 /*
 |--------------------------------------------------------------------------

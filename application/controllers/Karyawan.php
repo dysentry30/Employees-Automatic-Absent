@@ -8,7 +8,6 @@ class Karyawan extends CI_Controller
     protected $data_user;
     protected $time;
     protected $user_time;
-    protected $online_now;
     function __construct()
     {
         parent::__construct();
@@ -25,7 +24,6 @@ class Karyawan extends CI_Controller
         $this->load->library("upload", $config);
         date_default_timezone_set("Asia/Jakarta");
 
-        $this->online_now = array();
         if (!empty($this->session->session_user)) {
             $this->user      = $this->Karyawan_model->get_user();
             $this->data_user = $this->Karyawan_model->get_list_karyawan();
@@ -67,9 +65,7 @@ class Karyawan extends CI_Controller
     public function index()
     {
         if (!empty($this->session->session_user)) {
-            // $data_user = $this->Karyawan_model->get_list_karyawan();
 
-            var_dump($this->online_now);
             $data = [
                 "title" => "Dashboard",
                 "user" => $this->user,
@@ -78,18 +74,6 @@ class Karyawan extends CI_Controller
                 "user_time" => $this->user_time
             ];
 
-            // $user = $this->Karyawan_model->get_user($id);
-            // $now = new DateTime("now");
-            // $now->setTimezone(new DateTimeZone("Asia/Jakarta"));
-
-            // if($this->user_time["work_at"] != null && $this->user_time["home_at"] != null) {
-            //     $data_to_database = [
-            //         "nama" => $this->session->session_user["nama"],
-            //         "username" => $this->session->session_user["username"],
-            //     ];
-            //     $this->db->insert("kehadiran", $data_to_database);
-            // }
-            // var_dump($data);
             $this->load->view("templates/header", $data);
             $this->load->view("templates/sidenav", $data);
             $this->load->view("home", $data);
@@ -116,11 +100,14 @@ class Karyawan extends CI_Controller
 
     public function logout()
     {
-        // array_search($this->user, $this->online_now);
-
-        $this->session->unset_userdata("session_user");
-        // delete_cookie("cookie_user");
-        redirect("login", "refresh");
+        $data = [
+            "is_online" => 0
+        ];
+        $this->db->where("nama", $this->session->session_user["nama"]);
+        if ($this->db->update("list_karyawan", $data)) {
+            $this->session->unset_userdata("session_user");
+            redirect("login", "refresh");
+        }
     }
 
     public function signup()
@@ -342,6 +329,11 @@ class Karyawan extends CI_Controller
     // ! End views 
     // TODO Start Function
 
+    public function get_all_online()
+    {
+        print_r(json_encode($this->Karyawan_model->get_all_online()));
+    }
+
     public function absen_now()
     {
         $now = new DateTime("now");
@@ -448,12 +440,6 @@ class Karyawan extends CI_Controller
             TODO: format the date to Y means 4 digits year, m means mounth in numbers, d means day in numbers
             TODO: H means 2 digits hour, i means 2 digits minute and s means 2 digits of second 
         */
-        // var_dump(); 
-        // var_dump($time_toWork); 
-        // var_dump($time_toGoHome); 
-        // var_dump($updated_at); 
-        // die();
-        // var_dump($time_toGoHome); 
         if (strtotime($formatted_time_toWork) == strtotime($formatted_time_toGoHome)) {
             echo "The times cannot be the same value as the other";
         } else if ($time_toWork->diff($time_toGoHome)->h < 8) {
@@ -490,12 +476,18 @@ class Karyawan extends CI_Controller
             "username" => $this->input->post("username"),
             "password" => $this->input->post("password")
         ];
-        array_unshift($this->online_now, $data["username"]);
+
         // TODO Checking user in database
         $verified = $this->Karyawan_model->verify_account($data);
         if (!empty($verified) && $verified != null) {
-            $this->session->set_userdata("session_user", $verified);
-            return redirect("/", "refresh");
+            $data = [
+                "is_online" => 1
+            ];
+            $this->db->where("nama", $verified["nama"]);
+            if ($this->db->update("list_karyawan", $data)) {
+                $this->session->set_userdata("session_user", $verified);
+                return redirect("/", "refresh");
+            }
         } else {
             $this->session->set_flashdata("gagal", "Salah username atau password");
             return redirect("login", "refresh");
@@ -504,7 +496,6 @@ class Karyawan extends CI_Controller
 
     private function _edit_profile($data)
     {
-        // $data_user      = $this->Karyawan_model->get_list_karyawan();
 
         $nama           = $data["nama"];
         $username       = $data["username"];
@@ -522,19 +513,12 @@ class Karyawan extends CI_Controller
             "profile_img"   => $this->data_user["profile_img"]
         ];
 
-        // $password_hash = password_hash($this->user["password"], PASSWORD_DEFAULT);
-        // var_dump(password_verify("password", $this->user["password"]));
-        // var_dump($this->user["password"]);
-        // die();
-
         $data_user_account = [
             "nama"      => $nama,
             "username"  => $username,
             "password"  => $this->user["password"],
             "admin"     => $admin
         ];
-        // var_dump($profile_img);
-        // die();
 
         if ($password != null) {
             $data_user_account["password"] = password_hash($password, PASSWORD_DEFAULT);

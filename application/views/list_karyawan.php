@@ -9,7 +9,6 @@
         <div class="row">
             <form action="<?= base_url("list-karyawan/search"); ?>" method="POST">
                 <div class="col s6">
-                    <!-- <label for="nama">Name</label> -->
                     <input type="text" placeholder="Search by name" name="nama" id="nama" class="validate" autocomplete="off">
                 </div>
                 <div class="col s6">
@@ -33,6 +32,7 @@
             </tr>
         </thead>
         <tbody>
+            <?php $iteration = 0; ?>
             <?php foreach ($all_users as $user) : ?>
                 <?php $born_date = date_format(date_create($user["tanggal-lahir"]), "d F Y") ?>
                 <?php $createad_at = date_format(date_create($user["created_at"]), "d F Y") ?>
@@ -45,7 +45,11 @@
                     <td><?= $user["total_terlambat"] == null ? 0 : $user["total_terlambat"]; ?></td>
                     <td><?= $user["total_tidakmasuk"] == null ? 0 : $user["total_tidakmasuk"]; ?></td>
                     <td><?= $createad_at; ?></td>
-                    <td><i class="material-icons left green-text lighten-2 tiny">fiber_manual_record</i>Online</td>
+                    <?php if ($user["is_online"] == 1) : ?>
+                        <td><i class="material-icons left green-text lighten-2 tiny">fiber_manual_record</i>Online</td>
+                    <?php else : ?>
+                        <td><i class="material-icons left grey-text lighten-2 tiny">fiber_manual_record</i>Offline</td>
+                    <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
         </tbody>
