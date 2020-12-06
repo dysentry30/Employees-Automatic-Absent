@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'https://dysentry30.github.io/Employees-Automatic-Absent';
+$config['base_url'] = 'http://localhost/Employees-Automatic-Absent';
 
 /*
 |--------------------------------------------------------------------------
